@@ -1,0 +1,34 @@
+---
+layout:post
+title: "nova service-list ERROR (ClientException)错误处理"
+description: "ERROR (ClientException): The server has either erred or is incapable of performing the requested operation. (HTTP 500) "
+category: life
+tags: [life]
+---
+{% include JB/setup %}
+
+#1.错误描述:
+```bash
+root@all-in-one147:~# nova service-list
+ERROR (ClientException): The server has either erred or is incapable of performing the requested operation. (HTTP 500) (Request-ID: req-f38c1317-3862-4c54-ac12-d2adc0d39eb2)
+```
+#2.错误原因：
+```bash
+/etc/nova/nova.conf配置出错
+```
+#3.解决方案：
+```bash
+vi /etc/nova/nova.conf
+```
+检查上面配置文档中的[keystone_authtoken]节的节名，本节的配置
+```bash
+[keystone_authtoken]
+
+auth_strategy = keystone
+auth_uri = http://controller:5000/v2.0
+identity_uri = http://controller:35357
+admin_tenant_name = service
+admin_user = nova
+admin_password = openstack
+auth_protocol=http
+```

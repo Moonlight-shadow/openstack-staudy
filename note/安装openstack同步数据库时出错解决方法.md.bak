@@ -1,0 +1,83 @@
+title: "安装openstack同步数据库时出错解决方法"
+---
+#1.错误描述
+```bash
+root@all-in-one147:~# su -s /bin/sh -c "keystone-manage db_sync" keystone
+2014-12-10 13:53:04.945 19759 CRITICAL keystone [-] OperationalError: (OperationalError) (2005, "Unknown MySQL server host 'controller' (0)") None None
+2014-12-10 13:53:04.945 19759 TRACE keystone Traceback (most recent call last):
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/bin/keystone-manage", line 44, in <module>
+2014-12-10 13:53:04.945 19759 TRACE keystone     cli.main(argv=sys.argv, config_files=config_files)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/keystone/cli.py", line 307, in main
+2014-12-10 13:53:04.945 19759 TRACE keystone     CONF.command.cmd_class.main()
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/keystone/cli.py", line 74, in main
+2014-12-10 13:53:04.945 19759 TRACE keystone     migration_helpers.sync_database_to_version(extension, version)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/keystone/common/sql/migration_helpers.py", line 204, in sync_database_to_version
+2014-12-10 13:53:04.945 19759 TRACE keystone     _sync_common_repo(version)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/keystone/common/sql/migration_helpers.py", line 157, in _sync_common_repo
+2014-12-10 13:53:04.945 19759 TRACE keystone     engine = sql.get_engine()
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/keystone/common/sql/core.py", line 188, in get_engine
+2014-12-10 13:53:04.945 19759 TRACE keystone     return _get_engine_facade().get_engine()
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/keystone/common/sql/core.py", line 176, in _get_engine_facade
+2014-12-10 13:53:04.945 19759 TRACE keystone     _engine_facade = db_session.EngineFacade.from_config(CONF)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/oslo/db/sqlalchemy/session.py", line 795, in from_config
+2014-12-10 13:53:04.945 19759 TRACE keystone     retry_interval=conf.database.retry_interval)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/oslo/db/sqlalchemy/session.py", line 711, in __init__
+2014-12-10 13:53:04.945 19759 TRACE keystone     **engine_kwargs)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/oslo/db/sqlalchemy/session.py", line 386, in create_engine
+2014-12-10 13:53:04.945 19759 TRACE keystone     connection_trace=connection_trace
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/oslo/db/sqlalchemy/utils.py", line 890, in __call__
+2014-12-10 13:53:04.945 19759 TRACE keystone     self._url_from_target(target), target, arg, kw)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/oslo/db/sqlalchemy/utils.py", line 927, in _dispatch_on
+2014-12-10 13:53:04.945 19759 TRACE keystone     return self._dispatch_on_db_driver(dbname, driver, arg, kw)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/oslo/db/sqlalchemy/utils.py", line 981, in _dispatch_on_db_driver
+2014-12-10 13:53:04.945 19759 TRACE keystone     if self._invoke_fn(fn, arg, kw) is not None:
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/oslo/db/sqlalchemy/utils.py", line 930, in _invoke_fn
+2014-12-10 13:53:04.945 19759 TRACE keystone     return fn(*arg, **kw)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/oslo/db/sqlalchemy/session.py", line 456, in _init_events
+2014-12-10 13:53:04.945 19759 TRACE keystone     realmode = engine.execute("SHOW VARIABLES LIKE 'sql_mode'").fetchone()
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/engine/base.py", line 1751, in execute
+2014-12-10 13:53:04.945 19759 TRACE keystone     connection = self.contextual_connect(close_with_result=True)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/engine/base.py", line 1799, in contextual_connect
+2014-12-10 13:53:04.945 19759 TRACE keystone     self.pool.connect(),
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/pool.py", line 338, in connect
+2014-12-10 13:53:04.945 19759 TRACE keystone     return _ConnectionFairy._checkout(self)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/pool.py", line 641, in _checkout
+2014-12-10 13:53:04.945 19759 TRACE keystone     fairy = _ConnectionRecord.checkout(pool)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/pool.py", line 440, in checkout
+2014-12-10 13:53:04.945 19759 TRACE keystone     rec = pool._do_get()
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/pool.py", line 961, in _do_get
+2014-12-10 13:53:04.945 19759 TRACE keystone     return self._create_connection()
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/pool.py", line 285, in _create_connection
+2014-12-10 13:53:04.945 19759 TRACE keystone     return _ConnectionRecord(self)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/pool.py", line 411, in __init__
+2014-12-10 13:53:04.945 19759 TRACE keystone     self.connection = self.__connect()
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/pool.py", line 537, in __connect
+2014-12-10 13:53:04.945 19759 TRACE keystone     connection = self.__pool._creator()
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/engine/strategies.py", line 96, in connect
+2014-12-10 13:53:04.945 19759 TRACE keystone     connection_invalidated=invalidated
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/util/compat.py", line 199, in raise_from_cause
+2014-12-10 13:53:04.945 19759 TRACE keystone     reraise(type(exception), exception, tb=exc_tb)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/engine/strategies.py", line 90, in connect
+2014-12-10 13:53:04.945 19759 TRACE keystone     return dialect.connect(*cargs, **cparams)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/sqlalchemy/engine/default.py", line 377, in connect
+2014-12-10 13:53:04.945 19759 TRACE keystone     return self.dbapi.connect(*cargs, **cparams)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/MySQLdb/__init__.py", line 81, in Connect
+2014-12-10 13:53:04.945 19759 TRACE keystone     return Connection(*args, **kwargs)
+2014-12-10 13:53:04.945 19759 TRACE keystone   File "/usr/lib/python2.7/dist-packages/MySQLdb/connections.py", line 187, in __init__
+2014-12-10 13:53:04.945 19759 TRACE keystone     super(Connection, self).__init__(*args, **kwargs2)
+2014-12-10 13:53:04.945 19759 TRACE keystone OperationalError: (OperationalError) (2005, "Unknown MySQL server host 'controller' (0)") None None
+2014-12-10 13:53:04.945 19759 TRACE keystone
+```
+错误信息在最后一句：
+```bash
+OperationalError: (OperationalError) (2005, "Unknown MySQL server host 'controller' (0)") None None
+2014-12-10 13:53:04.945 19759 TRACE keystone
+```
+#2.错误原因：
+上面错误信息提示：未知的MYSQL服务器”controller“ ,说明controller未被解析
+#3.解决方案：
+在/etc/hosts中加上controller的解析,例如下面：
+```bash
+# vi /etc/hosts
+10.10.10.10		controller
+```

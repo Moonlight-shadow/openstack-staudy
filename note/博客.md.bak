@@ -1,0 +1,95 @@
+title: "在github搭建个人博客"
+---
+#注册github账号
+访问[github主页](http://www.github.com/)点击右上角的注册按钮（注意：注册的时候邮箱和用户名都要想好写上去，github的好多东西会发到邮箱上，用户名的话短一点好记一点，最好是人看一眼就可以记得住。因为要用用户名来创建仓库，仓库的名字短了，博客主页的地址也就短了）
+点击绿色按钮<img src="/img/1.png" style="display:block;margin:auto"/>
+  出现下面这个界面就说明你注册成功了，祝贺你！
+<img src="/img/2.jpg"style="display:block;margin:auto"/>
+#建立仓库 也就是这个页面上说的repository
+  直接点击上图的绿色按钮，也就是new repository 。开始创建仓库
+  仓库名最好填USERNAME.github.io（用你自己的用户名替换掉USERNAME）勾选public  和 READEME
+  <img src="/img/3.png" style="display:block;margin:auto"/>
+  出现下面的图片说明你创建成功了
+  <img src="/img/4.jpg" style="display:block;margin:auto"/>
+仓库是很强大的，具体我就不一一细说了   <br /><p></p>
+到此时此刻你一定很想知道博客主页到底长什么样吧，这点github早已为你想好了点击仓库中的setting设置
+<img src="/img/5.png" style="disaplay:block;margin:auto"/>  <br />
+那么接下来该干嘛呢？如果你是一个比较有品位、有知识、有追求的人的话，对这个页面肯定不满意吧。那么我们接下来就对这个页面进行装修，让他变得美观实用。还有一点就是你可以看下这个网页的域名，你一定也不满意吧，不急慢慢你就会满意的。
+#博客装潢
+##工具准备
+下载[git bash](http://git-scm.com/downloads/)、[github客户端](windows.github.com/)、[node.js](https://nodejs.org/download/)、[rubyInstall](http://rubyinstaller.org/downloads/)   <br />
+在安装github客户端时可能会出错，如果出错按照他的提示安装另一软件就可以解决（GitHub.application）这些都安装好的话就进入下一环节。
+##配置github（参考《[使用Github Pages建独立博客](http://beiyuu.com/github-pages/)》）
+打开gitbash
+###1.检查SSH keys的设置
+首先我们需要检查你电脑上现有的ssh key：
+```bash
+$ cd ~/.ssh
+```
+如果显示“No such file or directory”，跳到第三步，否则继续。
+###2、备份和移除原来的ssh key设置：
+因为已经存在key文件，所以需要备份旧的数据并删除：
+```bash
+$ ls
+config  id_rsa  id_rsa.pub  known_hosts
+$ mkdir key_backup
+$ cp id_rsa* key_backup
+$ rm id_rsa*
+```
+###3、生成新的SSH Key：
+输入下面的代码，就可以生成新的key文件，我们只需要默认设置就好，所以当需要输入文件名的时候，回车就好。
+```bash
+$ ssh-keygen -t rsa -C "邮件地址@youremail.com"
+Generating public/private rsa key pair.
+Enter file in which to save the key (/Users/your_user_directory/.ssh/id_rsa):<回车就好>
+```
+然后系统会要你输入加密串（Passphrase）：
+```bash
+Enter passphrase (empty for no passphrase):<输入加密串>
+Enter same passphrase again:<再次输入加密串>
+```
+最后看到这样的界面，就成功设置ssh key了：
+<img src="/img/6.png" style="display:block;margin:auto"/>
+###4、添加SSH Key到GitHub：
+在本机设置SSH Key之后，需要添加到GitHub上，以完成SSH链接的设置。
+
+用文本编辑工具打开id_rsa.pub文件，如果看不到这个文件，你需要设置显示隐藏文件。准确的复制这个文件的内容，才能保证设置的成功。
+
+在GitHub的主页上点击设置按钮：
+<img src="/img/7.png" style="display:block;margin:auto"/>
+选择SSH Keys项，把复制的内容粘贴进去，然后点击Add Key按钮即可：
+<img src="/img/8.jpg" style="display:block;margin:auto"/>
+PS：如果需要配置多个GitHub账号，可以参看这个多个github帐号的SSH key切换，不过需要提醒一下的是，如果你只是通过这篇文章中所述配置了Host，那么你多个账号下面的提交用户会是一个人，所以需要通过命令
+```bash
+$ git config --global --unset user.email
+```
+删除用户账户设置，在每一个repo下面使用
+```bash
+$ git config --local user.email '你的github邮箱@mail.com'
+```
+命令单独设置用户账户信息
+###5、测试一下
+可以输入下面的命令，看看设置是否成功，git@github.com的部分不要修改：
+```bash
+$ ssh -T git@github.com
+```
+如果是下面的反应：
+```bash
+The authenticity of host 'github.com (207.97.227.239)' can't be established.
+RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.
+Are you sure you want to continue connecting (yes/no)?
+```
+不要紧张，输入yes就好，然后会看到：
+```bash
+Hi <em>username</em>! You've successfully authenticated, but GitHub does not provide shell access.
+```
+###6、设置你的账号信息
+现在你已经可以通过SSH链接到GitHub了，还有一些个人信息需要完善的。
+
+Git会根据用户的名字和邮箱来记录提交。GitHub也是用这些信息来做权限的处理，输入下面的代码进行个人信息的设置，把名称和邮箱替换成你自己的，名字必须是你的真名，而不是GitHub的昵称。
+```bash
+$ git config --global user.name "你的名字"
+$ git config --global user.email "your_email@youremail.com"
+```
+###7、成功了!
+好了，你已经可以成功连接GitHub了。
