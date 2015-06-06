@@ -1,9 +1,16 @@
 ---
 layout: post
-title: "惠普X705W和闪迪CZ48对比测评"
+title: 惠普X705W和闪迪CZ48对比测评
 descripton: ""
 category： 测评
 tags：[测评]
+---
+---
+layout: post  
+title:  惠普X705W和闪迪CZ48对比测评
+description: ""  
+category: 测评 
+tags: [测评]
 ---
 # 工具及参数
 ## 工具
