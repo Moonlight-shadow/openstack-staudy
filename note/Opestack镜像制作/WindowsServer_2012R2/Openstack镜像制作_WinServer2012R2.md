@@ -184,5 +184,5 @@ virt-install --name ws2012r2 --memory 1024  \
 --is-public=true
 ```
 >参考:
-https://blog.csdn.net/wylfengyujiancheng/article/details/50468173
+https://blog.csdn.net/wylfengyujiancheng/article/details/50468173  
 https://www.jianshu.com/p/c92c3c9a2d6f
